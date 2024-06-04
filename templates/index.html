@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Google Meet</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Join Google Meet</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="alert alert-{{ messages[0][0] }}">
+              {{ messages[0][1] }}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <form method="post" action="/">
+            <div class="form-group">
+                <label for="meeting_url">Google Meet URL</label>
+                <input type="url" class="form-control" id="meeting_url" name="meeting_url" placeholder="Enter Google Meet URL" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Join</button>
+        </form>
+    </div>
+</body>
+</html>
