@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Google Meet</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Test</title>
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h1>Join Google Meet</h1>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="alert alert-{{ messages[0][0] }}">
-              {{ messages[0][1] }}
-            </div>
-          {% endif %}
-        {% endwith %}
-        <form method="post" action="/">
-            <div class="form-group">
-                <label for="meeting_url">Google Meet URL</label>
-                <input type="url" class="form-control" id="meeting_url" name="meeting_url" placeholder="Enter Google Meet URL" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Join</button>
-        </form>
-    </div>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <script>
+        let stream;
+        let mr;
+        let chunks = [];
+
+        document.getElementById("start").addEventListener("click", async () => {
+            stream = await window.navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: true,
+            });
+            mr = new MediaRecorder(stream);
+
+            mr.ondataavailable = (e) => {
+                chunks.push(e.data);
+            };
+            mr.onstop = () => {
+                const blob = new Blob(chunks, { type: chunks[0].type });
+                stream.getTracks().forEach(track => track.stop());
+
+                const el = document.createElement("a");
+                el.id = "dl";
+                el.href = URL.createObjectURL(blob);
+                el.download = "test.webm";
+                document.body.appendChild(el);
+                el.click();
+                document.body.removeChild(el);
+
+                // Send the file to the server
+                const formData = new FormData();
+                formData.append('file', blob, 'test.webm');
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                }).then(response => response.text())
+                    .then(data => console.log(data))
+                    .catch(error => console.error(error));
+            };
+
+            mr.start();
+        });
+
+        document.getElementById("stop").addEventListener("click", () => {
+            mr.stop();
+        });
+    </script>
 </body>
+
 </html>
