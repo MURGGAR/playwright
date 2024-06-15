@@ -62,3 +62,22 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
+
+#     import asyncio
+# from pyppeteer import launch
+
+# async def main():
+#     browser = await launch(executablePath=r'C:\Users\monam\AppData\Local\pyppeteer\pyppeteer\local-chromium\1181205\chrome-win\chrome-win\chrome.exe', headless=False)
+#     page = await browser.newPage()
+#     await page.goto('https://example.com')
+#     await page.screenshot({'path': 'example.png'})
+#     await browser.close()
+
+# asyncio.get_event_loop().run_until_complete(main())
+
+
+

@@ -94,7 +94,13 @@ def upload_file():
 
 async def run_playwright():
     async with async_playwright() as p:
-        browser = await p.firefox.launch(
+        url = "https://meet.google.com/pxj-xhhu-kyp"
+
+        # Split the URL by '/' and get the last segment
+        meeting_id = url.split("/")[-1]
+
+        print("Meeting ID:", meeting_id)
+        browser = await p.chromium.launch(
             headless=False,
             # firefox_user_prefs={
             #         "media.navigator.permission.disabled": True,
@@ -102,8 +108,9 @@ async def run_playwright():
             #     },
             args=[
                 "--allow-http-screen-capture",
-                "--auto-select-tab-capture-source-by-title=Rick Astley - Never Gonna Give You Up (Official Music Video) - YouTube",
+                "--auto-select-tab-capture-source-by-title=Meet",
                 "--autoplay-policy=no-user-gesture-required",
+                "--disable-blink-features=AutomationControlled",
             ]
         )
         context = await browser.new_context()
@@ -114,13 +121,25 @@ async def run_playwright():
 
         # Open the second page (YouTube)
         page2 = await context.new_page()
-        await page2.goto("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-
+        await page2.goto("https://meet.google.com/pxj-xhhu-kyp")
         # Bring the first page to the front and start recording
         await page1.bring_to_front()
         await page1.click("#start")
 
+
+
         await asyncio.sleep(40)
+        await page.click('button:has-text("Got it")')
+        await page.wait_for_timeout(5000)
+        await page.click('div.dP0OSd')
+        await page.click('div.GOH7Zb')
+            
+        await page.wait_for_timeout(5000)
+        await page.fill('input[type="text"]', "Bala Bot")
+        await page.click('button:has-text("Ask to join")')
+        await page.wait_for_selector('div.uGOf1d', state='visible')
+        await page.click('span.mUIrbf-RLmnJb')
+        await page.click('button:has-text("closed_caption_off")')
 
         # Bring the first page to the front and stop recording
         await page1.bring_to_front()

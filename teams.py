@@ -2,7 +2,19 @@ from playwright.sync_api import sync_playwright
 
 def run(playwright):
     try:
-        browser = playwright.chromium.launch(headless=False)
+        browser = playwright.chromium.launch(
+            args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--use-fake-device-for-media-stream", 
+                    "--use-fake-ui-for-media-stream",
+                    "--disable-popup-blocking",
+                    "--allow-http-screen-capture",
+                    "--auto-select-tab-capture-source-by-title=Meet",
+                    "--autoplay-policy=no-user-gesture-required",
+                    "--disable-blink-features=AutomationControlled",
+
+                ],
+                headless=False)
         context = browser.new_context(viewport={"width": 800, "height": 600})
         page = context.new_page()
 
