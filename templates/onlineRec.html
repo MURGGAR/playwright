@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Record Screen</title>
+</head>
+<body>
+  <button id="start">Start</button>
+  <button id="stop">Stop</button>
+  <script>
+    let stream;
+    let mr;
+    let chunks = [];
+
+    document.getElementById("start").addEventListener("click", async () => {
+      try {
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true,
+        });
+        mr = new MediaRecorder(stream);
+
+        mr.ondataavailable = (e) => {
+          chunks.push(e.data);
+        };
+
+        mr.onstop = () => {
+          const blob = new Blob(chunks, { type: chunks[0].type });
+          chunks = []; // Clear chunks for next recording
+
+          // Send the file to the server
+          const formData = new FormData();
+          formData.append('file', blob, '{{filename}}');
+          fetch('/upload', {
+            method: 'POST',
+            body: formData,
+          }).then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Upload error:', error));
+        };
+
+        mr.start();
+      } catch (error) {
+        console.error('Error accessing media devices:', error);
+      }
+    });
+
+    document.getElementById("stop").addEventListener("click", () => {
+      if (mr && mr.state !== 'inactive') {
+        mr.stop();
+      }
+    });
+  </script>
+</body>
+</html>
