@@ -84,7 +84,7 @@ async def form():
         else:
             flash('Please enter a valid Google Meet URL.', 'error')
         return redirect(url_for('form'))
-    return render_template('form.html')
+    return render_template('online-ui.html')
 
 @app.route("/ccc")
 def index():
